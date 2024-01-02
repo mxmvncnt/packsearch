@@ -1,10 +1,38 @@
-use actix_web::{App, get, HttpResponse, HttpServer, Responder};
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use std::io::Read;
+use actix_web::{App, get, HttpResponse, HttpServer, Responder, web::Data};
 use dotenv::dotenv;
+use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
+use serde::Serialize;
+
+pub struct AppState {
+    db: Pool<Postgres>,
+}
+
+#[derive(Serialize, FromRow)]
+struct Package {
+    id: i64,
+    human_name: String,
+    name: String,
+    latest_version: String,
+    description: String,
+    // keywords: [String; 0],
+    homepage: String,
+    // developer: String
+}
 
 #[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
+async fn hello(state: Data<AppState>) -> impl Responder {
+
+    match sqlx::query_as::<_, Package>("select id, human_name, name, latest_version, description, homepage from package")
+        .fetch_all(&state.db)
+        .await
+    {
+        Ok(users) => HttpResponse::Ok().json(users),
+        Err(error) => {
+            println!("{}", error.to_string());
+            HttpResponse::NotFound().json("No users found")
+        },
+    }
 }
 
 #[actix_web::main]
@@ -19,8 +47,10 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Error building a connection pool");
 
-    HttpServer::new(|| App::new()
-        .service(hello)
+    HttpServer::new(move ||
+        App::new()
+            .app_data(Data::new(AppState { db: pool.clone() }))
+            .service(hello)
     )
         .bind(("127.0.0.1", 8080))?
         .run()
