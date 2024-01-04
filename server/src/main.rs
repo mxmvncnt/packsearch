@@ -1,23 +1,11 @@
+mod database_structs;
+
 use actix_web::{App, get, HttpResponse, HttpServer, Responder, web::Data};
 use dotenv::dotenv;
 use serde::Serialize;
 use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
-
-pub struct AppState {
-    db: Pool<Postgres>,
-}
-
-#[derive(Serialize, FromRow)]
-struct Package {
-    id: i64,
-    human_name: String,
-    name: String,
-    latest_version: String,
-    description: String,
-    keywords: Vec<String>,
-    homepage: String,
-    developer: Vec<String>
-}
+use crate::database_structs::AppState;
+use crate::database_structs::Package;
 
 #[get("/")]
 async fn hello(state: Data<AppState>) -> impl Responder {
