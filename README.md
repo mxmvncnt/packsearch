@@ -18,6 +18,12 @@ With this, I want to make it easier for people to compile software so that on in
 
 ## API
 
+Lets start by defining the terms that are going to be used here:
+- Package: The top-level and non-changing information of a package.
+- Variation: The variation of a package for a certain distribution. This contains the data that varies from distro to distro.
+
+Note: the routes, terms and params could change if better ones are found, this is mostly to have a guideline of what to create and prevent too much deviation
+
 ### /search/
 param: one package name to look for
 Would return a list of packages with their "formal" and formatted names. Under this object, there would be the basic information of the package like the developper(s), description, links, etc. There would ideally also be an array/list that contains the equivalent name for the various distros,
@@ -93,6 +99,11 @@ This would be the same as /search/, but with a list of multiple different packag
   ]
 }
 ```
+
+### /package/:package_name/add-variation/:variation/
+:package_name -> the name (or ID, TDB later) of the package to add a variation to.
+:variation -> The variation of the package to add to the package.
+This endpoint would add a variation to a top-level package.
 
 ## Database
 I would ideally want this to be a relational (SQL) database because in this case, relations could be very useful.
