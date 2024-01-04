@@ -1,8 +1,7 @@
-use std::io::Read;
 use actix_web::{App, get, HttpResponse, HttpServer, Responder, web::Data};
 use dotenv::dotenv;
-use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
 use serde::Serialize;
+use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
 
 pub struct AppState {
     db: Pool<Postgres>,
@@ -15,23 +14,35 @@ struct Package {
     name: String,
     latest_version: String,
     description: String,
-    // keywords: [String; 0],
+    keywords: Vec<String>,
     homepage: String,
-    // developer: String
+    developer: Vec<String>
 }
 
 #[get("/")]
 async fn hello(state: Data<AppState>) -> impl Responder {
-
-    match sqlx::query_as::<_, Package>("select id, human_name, name, latest_version, description, homepage from package")
+    let result = sqlx::query_as::<_, Package>(
+        "
+            SELECT
+                id,
+                human_name,
+                name,
+                latest_version,
+                description,
+                keywords,
+                homepage,
+                developer
+            FROM package;
+            ")
         .fetch_all(&state.db)
-        .await
-    {
-        Ok(users) => HttpResponse::Ok().json(users),
+        .await;
+
+    match result {
+        Ok(packages) => HttpResponse::Ok().json(packages),
         Err(error) => {
             println!("{}", error.to_string());
-            HttpResponse::NotFound().json("No users found")
-        },
+            HttpResponse::NotFound().json("No packages found.")
+        }
     }
 }
 
