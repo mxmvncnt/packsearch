@@ -14,3 +14,4 @@ Cargo.lock
 *.pdb
 
 ./server/.env
+server/.env

@@ -7,7 +7,7 @@ use serde::Serialize;
 use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
 use crate::database_structs::AppState;
 use crate::database_structs::Package;
-use crate::search::search;
+use crate::search::search_service;
 
 #[get("/")]
 async fn hello(state: Data<AppState>) -> impl Responder {
@@ -52,7 +52,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(AppState { db: pool.clone() }))
             .service(hello)
-            .service(search)
+            .service(search_service)
     )
         .bind(("127.0.0.1", 8080))?
         .run()

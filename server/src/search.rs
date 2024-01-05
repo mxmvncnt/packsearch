@@ -17,7 +17,7 @@ struct Package {
 }
 
 #[get("/search/{query}")]
-async fn search(state: Data<AppState>, info : web::Path<String>) -> impl Responder {
+async fn search_service(state: Data<AppState>, info : web::Path<String>) -> impl Responder {
     let info = info.into_inner();
 
     println!("{}", info);
