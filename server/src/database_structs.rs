@@ -34,3 +34,26 @@ pub struct Variation {
     package_url: String,
     download_url: String,
 }
+
+// #[derive(Serialize, FromRow)]
+// pub struct FullVariation {
+//     id: i64,
+//     package_id: i64,
+//     distro: Distro,
+//     name: String,
+//     version: String,
+//     package_url: String,
+//     download_url: String,
+// }
+
+// #[derive(Serialize, FromRow)]
+// pub struct FullPackage {
+//     id: i64,
+//     package: Package,
+//     name: String,
+//     latest_version: String,
+//     description: String,
+//     keywords: Vec<String>,
+//     homepage: String,
+//     developer: Vec<String>,
+// }
