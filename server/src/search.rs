@@ -1,8 +1,8 @@
 use actix_web::{get, HttpResponse, Responder, web};
-use actix_web::web::Data;
+use actix_web::web::{Data, resource};
 use serde::Serialize;
-use sqlx::FromRow;
-use crate::database_structs::{AppState};
+use sqlx::{FromRow, query};
+use crate::database_structs::{AppState, Variation};
 
 #[derive(Serialize, FromRow)]
 struct Package {
@@ -16,33 +16,59 @@ struct Package {
     developer: Vec<String>,
 }
 
+struct Response {
+    id: i64,
+    human_name: String,
+    name: String,
+    latest_version: String,
+    description: String,
+    keywords: Vec<String>,
+    homepage: String,
+    developer: Vec<String>,
+    variations: Vec<Variation>
+}
+
 #[get("/search/{query}")]
-async fn search_service(state: Data<AppState>, info : web::Path<String>) -> impl Responder {
-    let info = info.into_inner();
+async fn search_service(state: Data<AppState>, query : web::Path<String>) -> impl Responder {
+    let query = query.into_inner().to_lowercase();
 
-    println!("{}", info);
+    println!("{}", query);
 
-    let result = sqlx::query_as::<_, Package>(
+    let potential_packages = sqlx::query_as::<_, Package>(
         "
-            SELECT
-                id,
-                human_name,
-                name,
-                latest_version,
-                description,
-                keywords,
-                homepage,
-                developer
-            FROM package;
+            SELECT DISTINCT package.id,
+                   human_name,
+                   package.name,
+                   latest_version,
+                   description,
+                   keywords,
+                   homepage,
+                   developer,
+                   v.name
+            FROM package
+                   INNER JOIN public.variation v ON package.id = v.package_id
+            WHERE $1 ILIKE ANY (keywords)
+               OR $1 ILIKE human_name
+               OR $1 ILIKE package.name
+               OR $1 ILIKE description
+               OR $1 ILIKE ANY (developer)
+               OR $1 ILIKE v.name;
             ")
+        .bind(query)
         .fetch_all(&state.db)
         .await;
 
-    match result {
-        Ok(packages) => HttpResponse::Ok().json(packages),
+    match potential_packages {
+        Ok(packages) => {
+            if (packages.len() == 0) {
+                HttpResponse::NotFound().json("No packages found for this query.")
+            } else {
+                HttpResponse::Ok().json(packages)
+            }
+        },
         Err(error) => {
             println!("{}", error.to_string());
-            HttpResponse::NotFound().json("No packages found.")
+            HttpResponse::NotFound().json("An error has occured.")
         }
     }
 }
