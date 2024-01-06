@@ -35,16 +35,18 @@ pub struct Variation {
     download_url: String,
 }
 
-// #[derive(Serialize, FromRow)]
-// pub struct FullVariation {
-//     id: i64,
-//     package_id: i64,
-//     distro: Distro,
-//     name: String,
-//     version: String,
-//     package_url: String,
-//     download_url: String,
-// }
+#[derive(Serialize, FromRow)]
+pub struct FullVariation {
+    id: i64,
+    package_id: i64,
+    distro_id: i64,
+    name: String,
+    version: String,
+    package_url: String,
+    download_url: String,
+    distro_name: String,
+    distro_version: String
+}
 
 // #[derive(Serialize, FromRow)]
 // pub struct FullPackage {

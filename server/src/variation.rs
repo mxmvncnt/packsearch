@@ -2,7 +2,7 @@ use actix_web::{get, HttpResponse, Responder, web};
 use actix_web::web::{Data, resource};
 use serde::Serialize;
 use sqlx::{FromRow, query};
-use crate::database_structs::{AppState, Variation};
+use crate::database_structs::{AppState, FullVariation, Variation};
 
 #[get("/package/{package_id}/variations")]
 async fn get_variations_service(state: Data<AppState>, package_id : web::Path<String>) -> impl Responder {
@@ -10,10 +10,19 @@ async fn get_variations_service(state: Data<AppState>, package_id : web::Path<St
 
     println!("{}", package_id);
 
-    let variations_result = sqlx::query_as::<_, Variation>(
+    let variations_result = sqlx::query_as::<_, FullVariation>(
         "
-            SELECT *
+            SELECT variation.id      AS id,
+                   package_id,
+                   distro_id,
+                   variation.name    AS name,
+                   variation.version AS version,
+                   package_url,
+                   download_url,
+                   d.name            AS distro_name,
+                   d.version         AS distro_version
             FROM variation
+                     INNER JOIN distro d ON d.id = variation.distro_id
             WHERE package_id = $1;
             ")
         .bind(package_id)
