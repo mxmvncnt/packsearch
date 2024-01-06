@@ -15,3 +15,4 @@ Cargo.lock
 
 ./server/.env
 server/.env
+website/.env

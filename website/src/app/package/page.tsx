@@ -1,16 +1,6 @@
+import { PackagesResponse } from "../page"
 
-export type PackagesResponse = {
-    id: number
-    human_name: string
-    name: string
-    latest_version: string
-    description: string
-    keywords: string[]
-    homepage: string
-    developer: string[]
-}
-
-async function getPackages() {
+async function getPackageInfo() {
     const res = await fetch(`${process.env.API_URL}/packages`)
 
     if (!res.ok) {
@@ -21,9 +11,9 @@ async function getPackages() {
     return res.json()
 }
 
-export default async function Home() {
+export default async function Package({ params }: { params: { package_id: number } }) {
 
-    const data = await getPackages()
+    const data = await getPackageInfo()
 
     console.log(data)
 
