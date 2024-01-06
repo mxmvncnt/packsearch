@@ -1,6 +1,7 @@
 mod database_structs;
 mod search;
 mod variation;
+mod package;
 
 use actix_web::{App, get, HttpResponse, HttpServer, Responder, web::Data};
 use dotenv::dotenv;
@@ -8,10 +9,11 @@ use serde::Serialize;
 use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
 use crate::database_structs::AppState;
 use crate::database_structs::Package;
+use crate::package::get_package_service;
 use crate::search::search_service;
 use crate::variation::get_variations_service;
 
-#[get("/")]
+#[get("/packages")]
 async fn hello(state: Data<AppState>) -> impl Responder {
     let result = sqlx::query_as::<_, Package>(
         "
@@ -56,6 +58,8 @@ async fn main() -> std::io::Result<()> {
             .service(hello)
             .service(search_service)
             .service(get_variations_service)
+            .service(get_package_service)
+
     )
         .bind(("127.0.0.1", 8080))?
         .run()
