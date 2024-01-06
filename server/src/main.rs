@@ -1,5 +1,6 @@
 mod database_structs;
 mod search;
+mod variation;
 
 use actix_web::{App, get, HttpResponse, HttpServer, Responder, web::Data};
 use dotenv::dotenv;
@@ -8,6 +9,7 @@ use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
 use crate::database_structs::AppState;
 use crate::database_structs::Package;
 use crate::search::search_service;
+use crate::variation::get_variations_service;
 
 #[get("/")]
 async fn hello(state: Data<AppState>) -> impl Responder {
@@ -53,6 +55,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(AppState { db: pool.clone() }))
             .service(hello)
             .service(search_service)
+            .service(get_variations_service)
     )
         .bind(("127.0.0.1", 8080))?
         .run()
