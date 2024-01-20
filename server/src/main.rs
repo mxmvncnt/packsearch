@@ -1,17 +1,16 @@
 mod database_structs;
+mod package;
 mod search;
 mod variation;
-mod package;
 
-use actix_web::{App, get, HttpResponse, HttpServer, Responder, web::Data};
-use dotenv::dotenv;
-use serde::Serialize;
-use sqlx::{FromRow, Pool, Postgres, postgres::PgPoolOptions};
 use crate::database_structs::AppState;
 use crate::database_structs::Package;
 use crate::package::get_package_service;
 use crate::search::search_service;
 use crate::variation::get_variations_service;
+use actix_web::{get, web::Data, App, HttpResponse, HttpServer, Responder};
+use dotenv::dotenv;
+use sqlx::postgres::PgPoolOptions;
 
 #[get("/packages")]
 async fn hello(state: Data<AppState>) -> impl Responder {
@@ -27,9 +26,10 @@ async fn hello(state: Data<AppState>) -> impl Responder {
                 homepage,
                 developer
             FROM package;
-            ")
-        .fetch_all(&state.db)
-        .await;
+            ",
+    )
+    .fetch_all(&state.db)
+    .await;
 
     match result {
         Ok(packages) => HttpResponse::Ok().json(packages),
@@ -52,16 +52,15 @@ async fn main() -> std::io::Result<()> {
         .await
         .expect("Error building a connection pool");
 
-    HttpServer::new(move ||
+    HttpServer::new(move || {
         App::new()
             .app_data(Data::new(AppState { db: pool.clone() }))
             .service(hello)
             .service(search_service)
             .service(get_variations_service)
             .service(get_package_service)
-
-    )
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }

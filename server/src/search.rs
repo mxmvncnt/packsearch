@@ -1,8 +1,8 @@
-use actix_web::{get, HttpResponse, Responder, web};
-use actix_web::web::{Data, resource};
-use serde::Serialize;
-use sqlx::{FromRow, query};
 use crate::database_structs::{AppState, Variation};
+use actix_web::web::Data;
+use actix_web::{get, web, HttpResponse, Responder};
+use serde::Serialize;
+use sqlx::FromRow;
 
 #[derive(Serialize, FromRow)]
 struct Package {
@@ -25,11 +25,11 @@ struct Response {
     keywords: Vec<String>,
     homepage: String,
     developer: Vec<String>,
-    variations: Vec<Variation>
+    variations: Vec<Variation>,
 }
 
 #[get("/search/{query}")]
-async fn search_service(state: Data<AppState>, query : web::Path<String>) -> impl Responder {
+async fn search_service(state: Data<AppState>, query: web::Path<String>) -> impl Responder {
     let query = query.into_inner().to_lowercase();
 
     println!("{}", query);
@@ -53,19 +53,20 @@ async fn search_service(state: Data<AppState>, query : web::Path<String>) -> imp
                OR $1 ILIKE description
                OR $1 ILIKE ANY (developer)
                OR $1 ILIKE v.name;
-            ")
-        .bind(query)
-        .fetch_all(&state.db)
-        .await;
+            ",
+    )
+    .bind(query)
+    .fetch_all(&state.db)
+    .await;
 
     match potential_packages {
         Ok(packages) => {
-            if (packages.len() == 0) {
+            if packages.len() == 0 {
                 HttpResponse::NotFound().json("No packages found for this query.")
             } else {
                 HttpResponse::Ok().json(packages)
             }
-        },
+        }
         Err(error) => {
             println!("{}", error.to_string());
             HttpResponse::NotFound().json("An error has occured.")

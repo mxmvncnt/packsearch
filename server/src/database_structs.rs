@@ -45,7 +45,7 @@ pub struct FullVariation {
     package_url: String,
     download_url: String,
     distro_name: String,
-    distro_version: String
+    distro_version: String,
 }
 
 // #[derive(Serialize, FromRow)]
