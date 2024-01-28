@@ -27,8 +27,7 @@ async fn search_service(state: Data<AppState>, query: web::Path<String>) -> impl
                    description,
                    keywords,
                    homepage,
-                   developer,
-                   v.name
+                   developer
             FROM package
                    INNER JOIN public.variation v ON package.id = v.package_id
             WHERE $1 ILIKE ANY (keywords)
