@@ -21,7 +21,7 @@ pub struct Package {
 pub struct Distro {
     id: i64,
     name: String,
-    version: String,
+    version: Option<String>,
 }
 
 #[derive(Serialize, FromRow)]
@@ -42,10 +42,10 @@ pub struct FullVariation {
     distro_id: i64,
     name: String,
     version: String,
-    package_url: String,
-    download_url: String,
+    package_url: Option<String>,
+    download_url: Option<String>,
     distro_name: String,
-    distro_version: String,
+    distro_version: Option<String>,
 }
 
 // #[derive(Serialize, FromRow)]
