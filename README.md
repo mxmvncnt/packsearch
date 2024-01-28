@@ -108,20 +108,60 @@ This endpoint would add a variation to a top-level package.
 ## Database
 I would ideally want this to be a relational (SQL) database because in this case, relations could be very useful.
 
-I am currently thinking of something like the following as the main table without the distro-specific data. (note: the keywords column could be a separate table)
-| id | human_name     | name             | description                    | keywords                   | homepage                             | latest_version | developer |
-|----|----------------|------------------|--------------------------------|----------------------------|--------------------------------------|----------------|-----------|
-| 1  | Java Open JDK  | java_open_jdk_17 | OpenJDK 17 Runtime Environment | java,openjdk,jdk,jdk17,... | https://openjdk.org/projects/jdk/17/ | 17.0.9         | OpenJDK   |
+### Schema
+#### Distro
+There would need to be a distro table, to keep track of distro versions and to make sure there are no conflicts (if for example ubuntu 22.04 has a different package as 24.04). Rolling release distros and other means of distribution that do not have a version tied to package versions such as Flatpak, Snap or Homebrew are also supported, simply with a null in the 'version' column.
 
-There would also need to be a distro table, to keep track of distro versions and to make sure there are no conflicts (if for example ubuntu 22.04 has a different package as 24.04).
-| id | name   | version |
-| -- | ------ | ------- |
-| 1  | Ubuntu | 23.10   |
-| 2  | Fedora | 39      |
-| 3  | Arch   | Rolling |
+| Name    | Type | Nullable? | Description                                        |
+|---------|------|-----------|----------------------------------------------------|
+| id      | int8 | No        |                                                    |
+| name    | text | No        | Name of the distribution method.                   |
+| version | text | Yes       | Version of the distribution method, if applicable. |
 
-For the other tables, I think something that would group all main distro trees (debian, redhat, arch, etc.) and that would contain multiple rows for each distro/distro version:
+##### Example data
+| id | name    | version |
+| -- | ------- | ------- |
+| 1  | Ubuntu  | 23.10   |
+| 2  | Ubuntu  | 24.04   |
+| 3  | Fedora  | 39      |
+| 4  | Arch    | NULL    |
+| 5  | Flathub | NULL    |
+
+#### Variation
+The variation table contains all the variations across the distribution methods.
+| Name         | Type | Nullable? | Description                                               |
+|--------------|------|-----------|-----------------------------------------------------------|
+| id           | int8 | No        |                                                           |
+| package_id   | int8 | No        | ID of the package.                                        |
+| distro_id    | int8 | No        | ID of the distribution method.                            |
+| name         | text | Yes       | Name of the package in the repositories of the distro.    |
+| version      | text | Yes       | Version of the package.                                   |
+| package_url  | text | Yes       | URL of the package page for the repository of the distro. |
+| download_url | text | Yes       | Direct download URL of the package for the distro.        |
+
+Example data:
 | package_id | distro_id | name            | version |
 | ---------- | --------- | --------------- | ------- |
 | 1          | 1         | openjdk-17-jdk  | 17.0.9  |
 | 1          | 2         | java-17-openjdk | 17.0.9  |
+
+#### Package
+I am currently thinking of something like the following as the main table without the distro-specific data. (note: the keywords column could be a separate table)
+
+| Name           | Type   | Nullable? | Description                                                    |
+|----------------|--------|-----------|----------------------------------------------------------------|
+| id             | int8   | No        |                                                                |
+| human_name     | text   | No        | Human-readable name of the package.                            |
+| name           | text   | Yes       |                                                                |
+| latest_version | text   | Yes       | Latest available version of the package.                       |
+| description    | text   | Yes       | Developer's description of the package.                        |
+| keywords       | text[] | Yes       | Keywords associated with the package. Used for search queries. |
+| homepage       | text   | Yes       | URL of the homepage of the package.                            |
+| developer      | text[] | No        | Developers or contributors of the project.                     |
+
+Example data:
+| id | human_name     | name             | description                    | keywords                   | homepage                                | latest_version | developer |
+|----|----------------|------------------|--------------------------------|----------------------------|-----------------------------------------|----------------|-----------|
+| 1  | Java Open JDK  | java_open_jdk_17 | OpenJDK 17 Runtime Environment | java,openjdk,jdk,jdk17,... | https://openjdk.org/projects/jdk/17/    | 17.0.9         | OpenJDK   |
+| 2  | Firefox        | firefox          | Mozilla Firefox Web browser    | NULL                       | https://www.mozilla.org/fr/firefox/new/ | 122            | Mozilla   |
+
