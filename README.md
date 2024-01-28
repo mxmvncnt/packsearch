@@ -134,8 +134,8 @@ The variation table contains all the variations across the distribution methods.
 | id           | int8 | No        |                                                           |
 | package_id   | int8 | No        | ID of the package.                                        |
 | distro_id    | int8 | No        | ID of the distribution method.                            |
-| name         | text | Yes       | Name of the package in the repositories of the distro.    |
-| version      | text | Yes       | Version of the package.                                   |
+| name         | text | No        | Name of the package in the repositories of the distro.    |
+| version      | text | No        | Version of the package.                                   |
 | package_url  | text | Yes       | URL of the package page for the repository of the distro. |
 | download_url | text | Yes       | Direct download URL of the package for the distro.        |
 
