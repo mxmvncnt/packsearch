@@ -1,20 +1,6 @@
-use crate::database_structs::{AppState, Variation};
+use crate::database_structs::{AppState, Package, Variation};
 use actix_web::web::Data;
 use actix_web::{get, web, HttpResponse, Responder};
-use serde::Serialize;
-use sqlx::FromRow;
-
-#[derive(Serialize, FromRow)]
-struct Package {
-    id: i64,
-    human_name: String,
-    name: String,
-    latest_version: String,
-    description: String,
-    keywords: Vec<String>,
-    homepage: String,
-    developer: Vec<String>,
-}
 
 struct Response {
     id: i64,
@@ -31,8 +17,6 @@ struct Response {
 #[get("/search/{query}")]
 async fn search_service(state: Data<AppState>, query: web::Path<String>) -> impl Responder {
     let query = query.into_inner().to_lowercase();
-
-    println!("{}", query);
 
     let potential_packages = sqlx::query_as::<_, Package>(
         "

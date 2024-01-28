@@ -9,8 +9,6 @@ async fn get_variations_service(
 ) -> impl Responder {
     let package_id = package_id.into_inner().parse::<i64>().unwrap();
 
-    println!("{}", package_id);
-
     let variations_result = sqlx::query_as::<_, FullVariation>(
         "
             SELECT variation.id      AS id,
