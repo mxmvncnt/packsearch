@@ -1,44 +1,17 @@
 mod database_structs;
 mod package;
+mod packages_list;
 mod search;
 mod variation;
 
 use crate::database_structs::AppState;
-use crate::database_structs::Package;
 use crate::package::get_package_service;
+use crate::packages_list::packages;
 use crate::search::search_service;
 use crate::variation::get_variations_service;
-use actix_web::{get, web::Data, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web::Data, App, HttpServer, Responder};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
-
-#[get("/packages")]
-async fn hello(state: Data<AppState>) -> impl Responder {
-    let result = sqlx::query_as::<_, Package>(
-        "
-            SELECT
-                id,
-                human_name,
-                name,
-                latest_version,
-                description,
-                keywords,
-                homepage,
-                developer
-            FROM package;
-            ",
-    )
-    .fetch_all(&state.db)
-    .await;
-
-    match result {
-        Ok(packages) => HttpResponse::Ok().json(packages),
-        Err(error) => {
-            println!("{}", error.to_string());
-            HttpResponse::NotFound().json("No packages found.")
-        }
-    }
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -55,7 +28,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(AppState { db: pool.clone() }))
-            .service(hello)
+            .service(packages)
             .service(search_service)
             .service(get_variations_service)
             .service(get_package_service)

@@ -1,18 +1,6 @@
-use crate::database_structs::{AppState, Package, Variation};
+use crate::database_structs::{AppState, Package};
 use actix_web::web::Data;
 use actix_web::{get, web, HttpResponse, Responder};
-
-struct Response {
-    id: i64,
-    human_name: String,
-    name: String,
-    latest_version: String,
-    description: String,
-    keywords: Vec<String>,
-    homepage: String,
-    developer: Vec<String>,
-    variations: Vec<Variation>,
-}
 
 #[get("/search/{query}")]
 async fn search_service(state: Data<AppState>, query: web::Path<String>) -> impl Responder {
