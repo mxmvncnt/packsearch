@@ -21,21 +21,22 @@ async fn search_service(state: Data<AppState>, query: web::Path<String>) -> impl
     let potential_packages = sqlx::query_as::<_, Package>(
         "
             SELECT DISTINCT package.id,
-                   human_name,
-                   package.name,
-                   latest_version,
-                   description,
-                   keywords,
-                   homepage,
-                   developer
+                            human_name,
+                            package.name,
+                            latest_version,
+                            description,
+                            keywords,
+                            homepage,
+                            developer
             FROM package
-                   INNER JOIN public.variation v ON package.id = v.package_id
-            WHERE $1 ILIKE ANY (keywords)
-               OR $1 ILIKE human_name
-               OR $1 ILIKE package.name
-               OR $1 ILIKE description
-               OR $1 ILIKE ANY (developer)
-               OR $1 ILIKE v.name;
+                     INNER JOIN public.variation v ON package.id = v.package_id
+            WHERE dmetaphone($1) ILIKE dmetaphone(human_name)
+               OR dmetaphone($1) = ANY (ARRAY(SELECT dmetaphone(element) FROM unnest(keywords) AS element))
+               OR dmetaphone($1) = ANY (ARRAY(SELECT dmetaphone(element) FROM unnest(developer) AS element))
+               OR dmetaphone($1) ILIKE dmetaphone(human_name)
+               OR dmetaphone($1) ILIKE dmetaphone(package.name)
+               OR dmetaphone($1) ILIKE dmetaphone(description)
+               OR dmetaphone($1) ILIKE dmetaphone(v.name);
             ",
     )
     .bind(query)
