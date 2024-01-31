@@ -50,27 +50,5 @@ async fn post_package_service(
     package: web::Json<UploadPackage>
 ) -> impl Responder {
     println!("{:?}", package.name);
-
-    // Ok(println!("This book is called {}!", p));
-    // let package_result = sqlx::query_as::<_, Package>(
-    //     "
-    //         SELECT *
-    //         FROM package
-    //         WHERE id = $1;
-    //         ",
-    // )
-    //     .bind(package_id)
-    //     .fetch_all(&state.db)
-    //     .await;
-    //
-    // Ok(format!("Welcome {}!", package.name))
-
     return HttpResponse::Ok();
-    // match package_result {
-    //     Ok(package) => HttpResponse::Ok().json(package),
-    //     Err(error) => {
-    //         println!("{}", error.to_string());
-    //         HttpResponse::NotFound().json("An error has occured.")
-    //     }
-    // }
 }
