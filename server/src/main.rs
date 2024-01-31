@@ -5,7 +5,7 @@ mod search;
 mod variation;
 
 use crate::database_structs::AppState;
-use crate::package::get_package_service;
+use crate::package::{get_package_service, post_package_service};
 use crate::packages_list::packages;
 use crate::search::search_service;
 use crate::variation::get_variations_service;
@@ -32,6 +32,7 @@ async fn main() -> std::io::Result<()> {
             .service(search_service)
             .service(get_variations_service)
             .service(get_package_service)
+            .service(post_package_service)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
