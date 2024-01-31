@@ -41,7 +41,7 @@ async fn search_service(state: Data<AppState>, query: web::Path<String>) -> impl
         }
         Err(error) => {
             println!("{}", error.to_string());
-            HttpResponse::NotFound().json("An error has occured.")
+            HttpResponse::NotFound().json("An error has occurred.")
         }
     }
 }

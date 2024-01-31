@@ -39,7 +39,7 @@ async fn get_variations_service(
         }
         Err(error) => {
             println!("{}", error.to_string());
-            HttpResponse::NotFound().json("An error has occured.")
+            HttpResponse::NotFound().json("An error has occurred.")
         }
     }
 }

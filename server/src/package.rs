@@ -26,7 +26,7 @@ async fn get_package_service(
         Ok(package) => HttpResponse::Ok().json(package),
         Err(error) => {
             println!("{}", error.to_string());
-            HttpResponse::NotFound().json("An error has occured.")
+            HttpResponse::NotFound().json("An error has occurred.")
         }
     }
 }
