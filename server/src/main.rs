@@ -9,7 +9,7 @@ use crate::package::{get_package_service, post_package_service};
 use crate::packages_list::packages;
 use crate::search::search_service;
 use crate::variation::get_variations_service;
-use actix_web::{web::Data, App, HttpServer, Responder};
+use actix_web::{web::Data, App, HttpServer};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 
