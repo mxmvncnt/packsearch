@@ -1,21 +1,22 @@
 import { Suspense } from "react"
+import { notFound } from "next/navigation"
 import { Package } from "../../page"
-import Link from "next/link"
 
 type Variation = {
-    id: number
-    package_id: number
-    distro_id: number
-    name: string
-    version: string
-    package_url: string
-    download_url: string
-    distro_name: string
-    distro_version: string
+    ID: number
+    PackageID: number
+    DistroID: number
+    Name: string
+    Version: string
+    PackageUrl: string
+    DownloadUrl: string
+    DistroName: string
+    DistroVersion: string
 }
 
-async function getPackageInfo(package_id: number) {
-    const res = await fetch(`${process.env.API_URL}/package/${package_id}`,
+async function getPackageInfo(package_id: string): Promise<Package> {
+    console.log(`${process.env.API_URL}/packages/${package_id}`)
+    const res = await fetch(`${process.env.API_URL}/packages/${package_id}`,
         {
             headers: {
                 'Cache-Control': 'no-cache'
@@ -23,24 +24,26 @@ async function getPackageInfo(package_id: number) {
         });
 
     if (!res.ok) {
-        // This will activate the closest `error.js` Error Boundary
-        throw new Error('Failed to fetch data');
+        console.log(`error querying '${process.env.API_URL}/packages/${package_id}'`)
+        throw new Error('Failed to fetch package info');
     }
 
-    return res.json();
+    const data = await res.json();
+
+    return data;
 }
 
 async function PackageInfo({ data }: { data: Package }) {
     return (
         <>
-            <h1>{data.human_name}</h1>
-            <p>{data.description}</p>
+            <h1>{data.HumanName}</h1>
+            <p>{data.Description}</p>
         </>
     );
 }
 
-async function getVariations(package_id: number) {
-    const res = await fetch(`${process.env.API_URL}/package/${package_id}/variations`,
+async function getVariations(package_id: string): Promise<Variation[]> {
+    const res = await fetch(`${process.env.API_URL}/packages/${package_id}/variations`,
         {
             headers: {
                 'Cache-Control': 'no-cache'
@@ -48,35 +51,49 @@ async function getVariations(package_id: number) {
         });
 
     if (!res.ok) {
-        // This will activate the closest `error.js` Error Boundary
-        throw new Error('Failed to fetch data')
+        console.log(`error querying '${process.env.API_URL}/packages/${package_id}/variations'`)
+        throw new Error('Failed to fetch variations');
     }
 
-    return res.json();
+    const data = await res.json();
+
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+        return Object.values(data);
+    }
+
+    return data;
 }
 
 async function Variations({ data }: { data: Variation[] }) {
+    if (!Array.isArray(data)) {
+        return <p>No variations available</p>;
+    }
+
     return (
         <>
             {data.map((variation: Variation) => (
-                <div key={variation.id}>
-                    <h1>{variation.distro_name} {variation.distro_version}</h1>
-                    <p>{variation.name}</p>
+                <div key={variation.ID}>
+                    <h1>{variation.DistroName} {variation.DistroVersion}</h1>
+                    <p>{variation.Name}</p>
                 </div>
             ))}
         </>
     );
 }
 
-export default async function Page({ params }: { params: { package_id: number } }) {
+export default async function Page({ params }: { params: Promise<{ package_id: string }> }) {
+    const { package_id } = await params;
 
-    let packageInfo = await getPackageInfo(params.package_id);
-    packageInfo = packageInfo[0];
-    const variations = await getVariations(params.package_id);
+    // Validate that package_id is numeric
+    if (!/^\d+$/.test(package_id)) {
+        notFound();
+    }
+
+    const packageInfo = await getPackageInfo(package_id);
+    const variations = await getVariations(package_id);
 
     return (
         <main>
-
             <Suspense fallback={<div>Loading...</div>}>
                 <PackageInfo data={packageInfo} />
             </Suspense>
@@ -86,7 +103,6 @@ export default async function Page({ params }: { params: { package_id: number } 
             <Suspense fallback={<div>Loading...</div>}>
                 <Variations data={variations} />
             </Suspense>
-
         </main>
     );
 }
