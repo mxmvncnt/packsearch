@@ -72,7 +72,7 @@ async function Variations({ data }: { data: Variation[] }) {
     return (
         <>
             {data.map((variation: Variation) => (
-                <div key={variation.ID}>
+                <div key={variation.ID} style={{"padding": "10px 0px"}}>
                     <h1>{variation.DistroName} {variation.DistroVersion}</h1>
                     <p>{variation.Name}</p>
                 </div>
