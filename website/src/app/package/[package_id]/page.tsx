@@ -73,8 +73,8 @@ async function Variations({ data }: { data: Variation[] }) {
         <>
             {data.map((variation: Variation) => (
                 <div key={variation.ID} style={{"padding": "10px 0px"}}>
-                    <h1>{variation.DistroName} {variation.DistroVersion}</h1>
-                    <p>{variation.Name}</p>
+                    <h1 style={{"fontWeight": "bold"}}>{variation.DistroName} {variation.DistroVersion}</h1>
+                    <code>{variation.Name}</code>
                 </div>
             ))}
         </>
