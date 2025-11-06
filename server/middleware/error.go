@@ -6,8 +6,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/mxmvncnt/packsearch/utils/apierror"
-	"github.com/mxmvncnt/packsearch/utils/logger"
+	"github.com/mxmvncnt/packsearch/server/utils/apierror"
+	"github.com/mxmvncnt/packsearch/server/utils/logger"
 )
 
 func ErrorHandler(h func(w http.ResponseWriter, r *http.Request) error) http.HandlerFunc {

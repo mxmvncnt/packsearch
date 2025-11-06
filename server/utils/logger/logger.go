@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/mxmvncnt/packsearch/config"
+	"github.com/mxmvncnt/packsearch/server/config"
 )
 
 var reset = "\033[0m"

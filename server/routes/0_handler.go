@@ -1,6 +1,6 @@
 package routes
 
-import "github.com/mxmvncnt/packsearch/database"
+import "github.com/mxmvncnt/packsearch/server/database"
 
 // Filename starts with 0 to be at the top of the list
 

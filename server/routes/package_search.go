@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 
-	"github.com/mxmvncnt/packsearch/utils"
+	"github.com/mxmvncnt/packsearch/server/utils"
 )
 
 func (handler *RoutesHandler) SearchPackage(w http.ResponseWriter, r *http.Request) error {

@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/mxmvncnt/packsearch/config"
-	"github.com/mxmvncnt/packsearch/database"
-	"github.com/mxmvncnt/packsearch/middleware"
-	"github.com/mxmvncnt/packsearch/routes"
-	"github.com/mxmvncnt/packsearch/utils/logger"
+	"github.com/mxmvncnt/packsearch/server/config"
+	"github.com/mxmvncnt/packsearch/server/database"
+	"github.com/mxmvncnt/packsearch/server/middleware"
+	"github.com/mxmvncnt/packsearch/server/routes"
+	"github.com/mxmvncnt/packsearch/server/utils/logger"
 	"github.com/rs/cors"
 )
 

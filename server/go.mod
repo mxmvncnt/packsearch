@@ -1,4 +1,4 @@
-module github.com/mxmvncnt/packsearch
+module github.com/mxmvncnt/packsearch/server
 
 go 1.25.3
 

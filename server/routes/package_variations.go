@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/mxmvncnt/packsearch/utils"
-	"github.com/mxmvncnt/packsearch/utils/apierror"
+	"github.com/mxmvncnt/packsearch/server/utils"
+	"github.com/mxmvncnt/packsearch/server/utils/apierror"
 )
 
 func (handler *RoutesHandler) GetVariations(w http.ResponseWriter, r *http.Request) error {

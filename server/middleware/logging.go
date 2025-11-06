@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/mxmvncnt/packsearch/utils/logger"
+	"github.com/mxmvncnt/packsearch/server/utils/logger"
 )
 
 func LoggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
