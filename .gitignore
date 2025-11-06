@@ -33,3 +33,4 @@ website/.env
 
 *.env
 !example.env
+/.idea
