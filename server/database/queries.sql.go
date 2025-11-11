@@ -15,13 +15,14 @@ const fuzzySearch = `-- name: FuzzySearch :many
 SELECT DISTINCT package.id,
                 human_name,
                 package.name,
-                latest_version,
+                ve.version_name AS latest_version,
                 description,
                 keywords,
                 homepage,
                 developer
 FROM package
          INNER JOIN public.variation v ON package.id = v.package_id
+         JOIN public.version ve ON package.latest_version = ve.id
 WHERE dmetaphone($1::text) ILIKE dmetaphone(human_name)
    OR dmetaphone($1::text) = ANY (ARRAY(SELECT dmetaphone(element) FROM unnest(keywords) AS element))
    OR dmetaphone($1::text) = ANY (ARRAY(SELECT dmetaphone(element) FROM unnest(developer) AS element))
@@ -31,15 +32,26 @@ WHERE dmetaphone($1::text) ILIKE dmetaphone(human_name)
    OR dmetaphone($1::text) ILIKE dmetaphone(v.name)
 `
 
-func (q *Queries) FuzzySearch(ctx context.Context, term string) ([]Package, error) {
+type FuzzySearchRow struct {
+	ID            int64
+	HumanName     string
+	Name          string
+	LatestVersion string
+	Description   string
+	Keywords      []string
+	Homepage      string
+	Developer     []string
+}
+
+func (q *Queries) FuzzySearch(ctx context.Context, term string) ([]FuzzySearchRow, error) {
 	rows, err := q.db.Query(ctx, fuzzySearch, term)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Package
+	var items []FuzzySearchRow
 	for rows.Next() {
-		var i Package
+		var i FuzzySearchRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.HumanName,

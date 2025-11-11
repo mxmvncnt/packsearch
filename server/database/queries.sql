@@ -18,13 +18,14 @@ FROM package;
 SELECT DISTINCT package.id,
                 human_name,
                 package.name,
-                latest_version,
+                ve.version_name AS latest_version,
                 description,
                 keywords,
                 homepage,
                 developer
 FROM package
          INNER JOIN public.variation v ON package.id = v.package_id
+         JOIN public.version ve ON package.latest_version = ve.id
 WHERE dmetaphone(@term::text) ILIKE dmetaphone(human_name)
    OR dmetaphone(@term::text) = ANY (ARRAY(SELECT dmetaphone(element) FROM unnest(keywords) AS element))
    OR dmetaphone(@term::text) = ANY (ARRAY(SELECT dmetaphone(element) FROM unnest(developer) AS element))
