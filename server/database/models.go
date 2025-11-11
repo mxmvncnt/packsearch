@@ -5,33 +5,33 @@
 package database
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 // Linux distributions. Each row contains a Linux distro with a version.
 type Distro struct {
 	ID      int64
 	Name    string
-	Version pgtype.Text
+	Version string
 }
 
 // Major versions of packages
 type MajorVersion struct {
 	ID          int64
 	PackageID   int64
-	VersionName pgtype.Text
-	ReleaseDate pgtype.Date
+	VersionName string
+	ReleaseDate time.Time
 }
 
 // Package information that is shared across distributions
 type Package struct {
 	ID            int64
 	HumanName     string
-	Name          pgtype.Text
-	LatestVersion pgtype.Int8
-	Description   pgtype.Text
+	Name          string
+	LatestVersion int64
+	Description   string
 	Keywords      []string
-	Homepage      pgtype.Text
+	Homepage      string
 	Developer     []string
 }
 
@@ -41,15 +41,15 @@ type Variation struct {
 	PackageID   int64
 	DistroID    int64
 	Name        string
-	Version     pgtype.Int8
-	PackageUrl  pgtype.Text
-	DownloadUrl pgtype.Text
+	Version     int64
+	PackageUrl  string
+	DownloadUrl string
 }
 
 // Minor versions of packages
 type Version struct {
 	ID             int64
 	MajorVersionID int64
-	VersionName    pgtype.Text
-	ReleaseDate    pgtype.Date
+	VersionName    string
+	ReleaseDate    time.Time
 }

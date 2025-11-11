@@ -146,11 +146,11 @@ type GetVariationsRow struct {
 	DistroID      int64
 	HumanName     string
 	Name          string
-	Version       pgtype.Int8
-	PackageUrl    pgtype.Text
-	DownloadUrl   pgtype.Text
+	Version       int64
+	PackageUrl    string
+	DownloadUrl   string
 	DistroName    string
-	DistroVersion pgtype.Text
+	DistroVersion string
 }
 
 func (q *Queries) GetVariations(ctx context.Context, packageID pgtype.Numeric) ([]GetVariationsRow, error) {
