@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"strings"
 )
 
 var distros = []string{"arch", "ubuntu", "fedora"}
@@ -26,10 +27,8 @@ func InstallCommand() {
 	//   <pck> install pkgName1 pkgName2 <-- 2:4 are pgkName1 and pkgName2, so the packages start at 2
 	var packagesSliceIndex = 4
 	if distro == "" {
-		distro = "ubuntu"
+		distro = detectCurrentDistro()
 		packagesSliceIndex = 2
-		// TODO: if distro param is not set, assume the package name is the one of the current distro
-		// For that, use the command "lsb_release -i -s" or find a way to get the info directly
 	}
 
 	if !slices.Contains(distros, distro) {
@@ -40,4 +39,16 @@ func InstallCommand() {
 	programNames := os.Args[packagesSliceIndex:]
 
 	fmt.Printf("install cmd: %s\n", Install(distro, programNames))
+}
+
+func detectCurrentDistro() string {
+	// alternatively could look into using lsb_release command
+	content, _ := os.ReadFile("/etc/os-release")
+	for _, line := range strings.Split(string(content), "\n") {
+		if strings.HasPrefix(line, "ID=") {
+			return strings.TrimPrefix(line, "ID=")
+		}
+	}
+
+	return "unknown"
 }
