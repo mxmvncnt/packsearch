@@ -2,8 +2,6 @@ package command
 
 import (
 	"fmt"
-	"log"
-	"os/user"
 	"strings"
 
 	"github.com/mxmvncnt/packsearch/cli/util"
@@ -36,10 +34,13 @@ func Install(distro string, packages []string) string {
 	return fmt.Sprintf("%s %s %s", fromPackageManager, toInstallCommand, packagesStr)
 }
 
+// function disabled temporarly
+// will need to detect wether the package manager requires root (some install in user profile, like Flathub or Homebrew)
 func isCommandRunAsRoot() bool {
-	currentUser, err := user.Current()
-	if err != nil {
-		log.Fatalf("could not get current user: %s", err)
-	}
-	return currentUser.Username == "root"
+	//currentUser, err := user.Current()
+	//if err != nil {
+	//	log.Fatalf("could not get current user: %s", err)
+	//}
+	//return currentUser.Username == "root"
+	return true
 }
