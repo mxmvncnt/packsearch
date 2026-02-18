@@ -17,6 +17,8 @@ func main() {
 	switch subcommand {
 	case "install":
 		command.InstallCommand()
+	case "search":
+		command.SearchCommand()
 	case "help":
 		printUsage()
 	default:

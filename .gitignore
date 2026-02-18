@@ -34,3 +34,5 @@ website/.env
 *.env
 !example.env
 /.idea
+
+cli/api_client/api_hostname
