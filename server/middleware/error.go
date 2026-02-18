@@ -31,7 +31,7 @@ func ErrorHandler(h func(w http.ResponseWriter, r *http.Request) error) http.Han
 	}
 }
 
-func formatRawValue(v interface{}) string {
+func formatRawValue(v any) string {
 	requestStr := fmt.Sprintf("%#v", v)
 	requestStr = strings.ReplaceAll(requestStr, ", ", ",\n  ")
 	requestStr = strings.ReplaceAll(requestStr, "{", "{\n  ")
