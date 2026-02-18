@@ -9,15 +9,15 @@ import (
 	"github.com/mxmvncnt/packsearch/server/database"
 )
 
-func Search(packageName string) []database.Package {
+func Search(packageName string) []database.FuzzySearchRow {
 	response, err := http.Get(fmt.Sprintf("%s/search/%s", ApiHostname, packageName))
 	if err != nil {
 		util.ExitWithError(err.Error())
-		return []database.Package{}
+		return []database.FuzzySearchRow{}
 	}
 	defer response.Body.Close()
 
-	var result []database.Package
+	var result []database.FuzzySearchRow
 
 	decoder := json.NewDecoder(response.Body)
 	if err := decoder.Decode(&result); err != nil {
